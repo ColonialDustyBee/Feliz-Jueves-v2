@@ -1,0 +1,8 @@
+# env
+.env
+# configs
+config.json
+# node modules
+node_modules
+# Unnecessary clutter
+.eslintrc.json
