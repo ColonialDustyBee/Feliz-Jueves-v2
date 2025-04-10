@@ -2,30 +2,30 @@ const fs = require('node:fs'); // Node's native file system module that is used 
 const path = require('node:path'); // Helps construct paths to access files and directories, automatically detects the OS it's working in
 const {Client, Collection, Events, GatewayIntentBits, AttachmentBuilder} = require('discord.js'); 
 const client = new Client({intents : [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
-client.commands = new Collection(); // Allows us to read commands in other files with the .commands property
-const foldersPath = path.join(__dirname, 'commands'); // Sets path to our commands directory
-const commandFolders = fs.readdirSync(foldersPath); // Reads commands directory
 const dotenv = require('dotenv');
 const channelID = ''; 
 const cron = require('node-cron');
 
 dotenv.config();
 
-for (const folder of commandFolders){
-    const commandsPath = path.join(foldersPath, folder); // joins the folders inside of the commands folder, mainly the utility folder in this case
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js')); // Only reads the javascript files
-    for (const file of commandFiles){
-        const filePath = path.join(commandsPath, file); // Joins path where command file is located in
-        const command = require(filePath); // fetches command from commands.js using the path that we defined where the file is located too
+client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
 
-        if('data' in command && 'execute' in command){ // Finds data and execute pair that we defined in commands.js
-            client.commands.set(command.data.name, command);
-        }
-        else{
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);    
-        }
-    }
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
 }
+
 
 client.once(Events.ClientReady, readyClient => { // Allows us to confirm that the bot has been turned on
     console.log(`Logged in as ${readyClient.user.tag}!`);

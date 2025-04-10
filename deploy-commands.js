@@ -37,6 +37,14 @@ const rest = new REST().setToken(token);
 			Routes.applicationGuildCommands(clientId, guildId),
 			{ body: commands },
 		);
+        // Comment first block above and unblock this one to deploy globally
+        /* 
+        const data = await rest.put(
+			Routes.applicationCommands(clientId),
+			{ body: commands },
+		);
+        
+        */
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
