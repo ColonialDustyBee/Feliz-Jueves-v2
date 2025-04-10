@@ -38,9 +38,6 @@ client.on(Events.InteractionCreate, async interaction => { // Reads interactions
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
     }
-    if (command == 'video-fetch'){ // Going to be for video-fetch.
-        interaction.followUp("I'm alive bitch");
-    }
     try{
         await command.execute(interaction);
     }

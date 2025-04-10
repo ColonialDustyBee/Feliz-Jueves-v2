@@ -1,8 +1,10 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-module.exports = {
+module.exports =  {
     data: new SlashCommandBuilder()
-        .setName('video-fetch')
-        .setDescription('Randomly pulls from an archive of videos that is then sent directly to channel'),
-    
+        .setName("video-fetch")
+        .setDescription("Fetches random video"),
+    async execute(interaction){
+        await interaction.reply("Fetching random video...");
+    }
 };
