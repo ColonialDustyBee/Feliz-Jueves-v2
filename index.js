@@ -2,7 +2,6 @@ const fs = require('node:fs'); // Node's native file system module that is used 
 const path = require('node:path'); // Helps construct paths to access files and directories, automatically detects the OS it's working in
 const {Client, Collection, Events, GatewayIntentBits, AttachmentBuilder} = require('discord.js'); 
 const client = new Client({intents : [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages]});
-const juevesAttachment = new AttachmentBuilder('FelizJuevesVideo/FelizJueves.mp4', {name: 'FelizJueves.mp4'});
 client.commands = new Collection(); // Allows us to read commands in other files with the .commands property
 const foldersPath = path.join(__dirname, 'commands'); // Sets path to our commands directory
 const commandFolders = fs.readdirSync(foldersPath); // Reads commands directory
@@ -39,6 +38,9 @@ client.on(Events.InteractionCreate, async interaction => { // Reads interactions
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
     }
+    if (command == 'video-fetch'){ // Going to be for video-fetch.
+        interaction.followUp("I'm alive bitch");
+    }
     try{
         await command.execute(interaction);
     }
@@ -53,6 +55,8 @@ client.on(Events.InteractionCreate, async interaction => { // Reads interactions
     }
     
 });
+
+// JUEVES V1 STUFF
 client.on(Events.MessageCreate, async (message) => { // allows for message interaction to be possible.
     if(message.content.toLowerCase().includes("jueves")){
         await message.channel.send({files: [juevesAttachment]});
@@ -66,7 +70,7 @@ function sendWeeklyJueves(){
 }
 function scheduleWeeklyJueves(){
     try{
-        cron.schedule('0 12 * * 4', () => {
+        cron.schedule('0 12 * * 4', () => { // Could possible make it so it sends at any other time but it's up to user discretion at that point
             sendWeeklyJueves();
         });
     }
