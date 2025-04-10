@@ -74,4 +74,4 @@ function scheduleWeeklyJueves(){
         console.error('Error scheduling cron job');
     }
 }
-client.login('INSERT YOUR TOKEN HERE, BE SURE IT IS HIDDEN'); 
+client.login(process.env.DISCORD_TOKEN); 
