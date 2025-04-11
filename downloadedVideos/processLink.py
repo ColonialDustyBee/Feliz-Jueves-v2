@@ -6,7 +6,7 @@ URL = ['https://www.youtube.com/watch?v=TBxS0XhdfmU'] # If all is said and done,
 ydl_opts = {
     'format': 'bestvideo[res=720p][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[ext=mp4]',
     'merge_output_format': 'mp4',
-    'cookies': 'cookiesyoutubeprivate.txt',
+    'cookies': 'cookies.txt',
     'postprocessors': [{
         'key': 'FFmpegVideoConvertor',
         'preferedformat': 'mp4',
