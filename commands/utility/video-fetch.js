@@ -15,7 +15,6 @@ module.exports =  {
         // We'll want one for Instagram and one for YT
         const linkProvided = interaction.options.getString('link', true) 
         
-        await interaction.reply("Fetching random video..."); 
         
 
     }
