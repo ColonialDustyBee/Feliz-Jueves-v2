@@ -6,5 +6,5 @@ config.json
 node_modules
 # Unnecessary clutter
 .eslintrc.json
-# youtube throaway cookies file (if this gets leaked, the only thing an attacker would get access to is a moot)
-cookies.txt
+# cookies files
+*cookies.txt

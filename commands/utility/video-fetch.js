@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const fs = {node:fs} // File system 
+const { ChildProcess } = require('child_process');
 
 module.exports =  {
     data: new SlashCommandBuilder()
@@ -12,11 +12,11 @@ module.exports =  {
 
         ),
     async execute(interaction){
+        // We'll want one for Instagram and one for YT
         const linkProvided = interaction.options.getString('link', true) 
+        
         await interaction.reply("Fetching random video..."); 
-        // Spawn child process
-        // Make sure to pull identifiable ID from link for better filtering: https://www.youtube.com/watch?v=4jXEuIHY9ic'
-        // Yt-dlp should include id of video.
+        
 
     }
 };
