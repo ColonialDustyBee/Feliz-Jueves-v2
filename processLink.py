@@ -12,6 +12,5 @@ args = [
     "-o", "./%(title)s.%(ext)s",  # output path
     url
 ]
-
 subprocess.run(args, capture_output=True, text=True)
-print("./%(title)s.%(ext)s") # Filename
+print("/") # Filename (todo: make sure video is fetched correctly. it downloads)
