@@ -1,15 +1,17 @@
-# All hail yt-dlp
-from yt_dlp import YoutubeDL  # type: ignore
+import subprocess # spawns this as a child process
 import sys
-URL = sys.argv[1] # link
-ydl_opts = {
-    'format': 'bestvideo[vcodec^=avc1][height<=720]+bestaudio[acodec^=mp4a][ext=m4a]/best[ext=mp4]',
-    'merge_output_format': 'mp4',
-    'cookies': 'cookies.txt',
-    'postprocessors': [{
-        'key': 'FFmpegVideoConvertor',
-        'preferedformat': 'mp4',
-    }],
-}
-with YoutubeDL(ydl_opts) as ydl:
-    ydl.download(URL)
+
+
+url = sys.argv[1] # URL babey
+args = [
+    "/usr/bin/yt-dlp",            # path to yt-dlp
+    "--no-playlist",               # only single video
+    "--restrict-filenames",        # safe filenames
+    "-f", "bv*+ba/b",              # best video + best audio, fallback
+    "--merge-output-format", "mp4",# force MP4
+    "-o", "./%(title)s.%(ext)s",  # output path
+    url
+]
+
+subprocess.run(args, capture_output=True, text=True)
+print("./%(title)s.%(ext)s") # Filename

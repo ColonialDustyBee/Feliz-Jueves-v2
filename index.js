@@ -75,4 +75,4 @@ function scheduleWeeklyJueves(){
         console.error('Error scheduling cron job');
     }
 }
-client.login(process.env.DISCORD_TOKEN); 
+client.login(process.env.TOKEN); 
