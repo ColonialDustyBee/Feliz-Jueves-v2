@@ -53,26 +53,4 @@ client.on(Events.InteractionCreate, async interaction => { // Reads interactions
     
 });
 
-// JUEVES V1 STUFF
-client.on(Events.MessageCreate, async (message) => { // allows for message interaction to be possible.
-    if(message.content.toLowerCase().includes("jueves")){
-        await message.channel.send({files: [juevesAttachment]});
-    }
-});
-function sendWeeklyJueves(){
-    const channel = client.channels.cache.get(channelID);
-    if(channel){
-      channel.send({files: [juevesAttachment]});
-    }
-}
-function scheduleWeeklyJueves(){
-    try{
-        cron.schedule('0 12 * * 4', () => { // Could possible make it so it sends at any other time but it's up to user discretion at that point
-            sendWeeklyJueves();
-        });
-    }
-    catch(error){
-        console.error('Error scheduling cron job');
-    }
-}
 client.login(process.env.TOKEN); 
