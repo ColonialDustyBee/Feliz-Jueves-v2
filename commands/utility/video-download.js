@@ -9,7 +9,7 @@ module.exports = {
         .setDescription("Downloads video and sends it back in MP4 format")
         .addStringOption(option =>
             option.setName('link')
-                .setDescription('The YouTube link')
+                .setDescription('Either youtube or instagram link')
                 .setRequired(true)
         ),
     async execute(interaction) {
@@ -18,9 +18,9 @@ module.exports = {
         // 1. URL Validation
         try {
             const url = new URL(linkProvided);
-            const allowedDomains = ['youtube.com', 'youtu.be'];
+            const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com'];
             const isAllowed = allowedDomains.some(domain => url.hostname.endsWith(domain));
-            if (!isAllowed) return interaction.reply({ content: "Please provide a YouTube link.", ephemeral: true });
+            if (!isAllowed) return interaction.reply({ content: "Please provide a valid link.", ephemeral: true });
         } catch (e) {
             return interaction.reply({ content: "Invalid URL.", ephemeral: true });
         }
@@ -34,6 +34,7 @@ module.exports = {
 
         // 3. Spawn process
         const ytProcess = spawn('yt-dlp', [
+            '--cookies', './cookies.txt', // Path to your file
             '-f', 'mp4',
             '-o', filePath,
             linkProvided

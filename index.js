@@ -29,7 +29,6 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, readyClient => { // Allows us to confirm that the bot has been turned on
     console.log(`Logged in as ${readyClient.user.tag}!`);
-    scheduleWeeklyJueves();
 });
 client.on(Events.InteractionCreate, async interaction => { // Reads interactions from users.
     if (!interaction.isChatInputCommand()) return;
