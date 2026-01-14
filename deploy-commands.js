@@ -41,7 +41,7 @@ const rest = new REST().setToken(process.env.TOKEN);
         // Comment first block above and unblock this one to deploy globally
         
         const data = await rest.put(
-			Routes.applicationCommands(clientId),
+			Routes.applicationCommands(process.env.CLIENT_ID),
 			{ body: commands },
 		);
         
