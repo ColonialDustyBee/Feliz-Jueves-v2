@@ -15,7 +15,7 @@ module.exports = {
     async execute(interaction) {
         const linkProvided = interaction.options.getString('link', true);
 
-        // 1. URL Validation
+        // 1. URL Validation, ensures users can't just enter random files
         try {
             const url = new URL(linkProvided);
             const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com'];
@@ -25,16 +25,16 @@ module.exports = {
             return interaction.reply({ content: "Invalid URL.", ephemeral: true });
         }
 
-        // 2. Defer Reply: Tells Discord "I am thinking" (gives you up to 15 mins)
+        // 2. Makes jueves the thinker (makes discord's api wait for a response)
         await interaction.deferReply();
 
-        const fileName = `video_${Date.now()}.mp4`;
+        const fileName = `video_${Date.now()}.mp4`; // Gives the file a unique name, avoids conflicts if two users were to enter the same video twice
         // Put the file in a temporary folder or the current directory
         const filePath = path.join(__dirname, fileName);
 
         // 3. Spawn process
         const ytProcess = spawn('yt-dlp', [
-            '--cookies', './cookies.txt', // Path to your file
+            '--cookies', './cookies.txt', // Path to cookies
             '-f', 'mp4',
             '-o', filePath,
             linkProvided
