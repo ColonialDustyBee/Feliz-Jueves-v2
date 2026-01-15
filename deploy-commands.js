@@ -25,8 +25,6 @@ for (const folder of commandFolders) {
 
 // New Restful API to prepare to send to endpoints
 const rest = new REST().setToken(process.env.TOKEN);
-
-// and deploy your commands!
 (async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);

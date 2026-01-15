@@ -37,7 +37,7 @@ module.exports = {
 function checkURL(linkProvided) { 
     try {
         const url = new URL(linkProvided);
-        const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com', 'tiktok.com'];
+        const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com', 'tiktok.com', 'x.com'];
         return allowedDomains.some(domain => url.hostname.endsWith(domain));
     } catch (e) {
         return false;
