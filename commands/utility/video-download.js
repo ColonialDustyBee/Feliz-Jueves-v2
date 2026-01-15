@@ -1,7 +1,10 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { spawn } = require('child_process');
 const path = require('path');
-const fs = require('fs'); // Fixed: removed the curly braces
+const fs = require('fs');
+
+const queue = [];
+let isProcessing = false;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,52 +17,103 @@ module.exports = {
         ),
     async execute(interaction) {
         const linkProvided = interaction.options.getString('link', true);
+        
+        await interaction.deferReply(); 
 
-        // 1. URL Validation, ensures users can't just enter random files
-        try {
-            const url = new URL(linkProvided);
-            const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com'];
-            const isAllowed = allowedDomains.some(domain => url.hostname.endsWith(domain));
-            if (!isAllowed) return interaction.reply({ content: "Please provide a valid link.", ephemeral: true });
-        } catch (e) {
-            return interaction.reply({ content: "Invalid URL.", ephemeral: true });
+        // Fix 1: checkURL is now synchronous or awaited correctly
+        const validURL = checkURL(linkProvided);
+        
+        if (validURL) {
+            // Fix 2: Changed key to 'link' so it matches processQueue
+            queue.push({ interaction, link: linkProvided });
+            processQueue();
+        } else {
+            await interaction.editReply("Incorrect type of URL! Please use YouTube, Instagram, or TikTok.");
         }
+    }
+};
 
-        // 2. Makes jueves the thinker (makes discord's api wait for a response)
-        await interaction.deferReply();
+// Fix 3: Removed async as URL parsing is synchronous
+function checkURL(linkProvided) { 
+    try {
+        const url = new URL(linkProvided);
+        const allowedDomains = ['youtube.com', 'youtu.be', 'instagram.com', 'tiktok.com'];
+        return allowedDomains.some(domain => url.hostname.endsWith(domain));
+    } catch (e) {
+        return false;
+    }
+}
 
-        const fileName = `video_${Date.now()}.mp4`; // Gives the file a unique name, avoids conflicts if two users were to enter the same video twice
-        // Put the file in a temporary folder or the current directory
+async function processQueue() {
+    if (isProcessing || queue.length === 0) return;
+    isProcessing = true;
+
+    const { interaction, link } = queue.shift(); 
+    try {
+        await downloadAndSend(interaction, link);
+    } catch (error) {
+        console.error("Queue Error:", error);
+    } finally {
+        const delay = Math.floor(Math.random() * (7000 - 3000 + 1) + 3000);
+        setTimeout(() => {
+            isProcessing = false;
+            processQueue();
+        }, delay);
+    }
+}
+
+function downloadAndSend(interaction, link) {
+    return new Promise((resolve) => { 
+        const fileName = `video_${Date.now()}.mp4`;
         const filePath = path.join(__dirname, fileName);
 
-        // 3. Spawn process
         const ytProcess = spawn('yt-dlp', [
-            '--cookies', './cookies.txt', // Path to cookies
-            '-f', 'mp4',
+            '--cookies', './cookies.txt',
+            '--no-playlist',
+            // Merges best video and audio into mp4
+            '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             '-o', filePath,
-            linkProvided
+            link
         ]);
+
+        // Logging errors to your terminal for debugging
+        ytProcess.stderr.on('data', (data) => {
+            console.error(`yt-dlp error: ${data}`);
+        });
 
         ytProcess.on('close', async (code) => {
             if (code !== 0) {
-                return interaction.editReply("Error occurred while downloading.");
+                await interaction.editReply("Error occurred while downloading. Check console for details.");
+                return resolve(); // Fix 4: Ensure queue unblocks on failure
             }
 
             try {
-                // 4. Send the file
-                await interaction.editReply({
-                    content: "Here is your video!",
-                    files: [filePath]
-                });
+                const stats = fs.statSync(filePath);
+                const fileSizeInMB = stats.size / (1024 * 1024);
+
+                if (fileSizeInMB > 100) {
+                    await interaction.editReply("Video downloaded! but can't send, might exceed the limit (100mbs for boosted servers, 25mb for the rest");
+                } else {
+                    await interaction.editReply({
+                        content: "Here is your video!",
+                        files: [filePath]
+                    });
+                }
             } catch (err) {
-                console.error(err);
-                await interaction.editReply("Video downloaded, but it might be too large for Discord (25MB limit).");
+                console.error("File send error:", err);
+                await interaction.editReply("Failed to send the video file.");
             } finally {
-                // 5. Cleanup: Delete the file
+                // Fix 5: Cleanup and always resolve to keep queue moving
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                 }
+                resolve();
             }
         });
-    }
-};
+
+        ytProcess.on('error', (err) => {
+            console.error("Spawn error:", err);
+            resolve(); // Don't let the queue hang
+        });
+    });
+}
