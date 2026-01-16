@@ -32,8 +32,7 @@ module.exports = {
         }
     }
 };
-
-// Fix 3: Removed async as URL parsing is synchronous
+// Checks for url
 function checkURL(linkProvided) { 
     try {
         const url = new URL(linkProvided);
@@ -66,7 +65,7 @@ function downloadAndSend(interaction, link) {
     return new Promise((resolve) => { 
         const fileName = `video_${Date.now()}.mp4`;
         const filePath = path.join(__dirname, fileName);
-        console.log(filePath);
+
         const ytProcess = spawn('yt-dlp', [
             '--cookies', './cookies.txt',
             '--no-playlist',
@@ -81,20 +80,18 @@ function downloadAndSend(interaction, link) {
             console.error(`yt-dlp error: ${data}`);
         });
 
-       // yt-dlp renames the file at the very end; this ensures the file exists before we 'stat' it.
-        setTimeout(async () => {
-            try {
-                if (!fs.existsSync(filePath)) {
-                    console.error(`ENOENT: File not found at ${filePath}`);
-                    await interaction.editReply("Internal error: Download finished but file is missing.");
-                    return resolve();
-                }
+        ytProcess.on('close', async (code) => {
+            if (code !== 0) {
+                await interaction.editReply("Error occurred while downloading. Check console for details.");
+                return resolve(); 
+            }
 
+            try {
                 const stats = fs.statSync(filePath);
                 const fileSizeInMB = stats.size / (1024 * 1024);
 
-                if (fileSizeInMB > 25) { // Adjusted for standard Discord limit
-                    await interaction.editReply(`Video downloaded but it is too large to send (${fileSizeInMB.toFixed(2)}MB).`);
+                if (fileSizeInMB > 100) {
+                    await interaction.editReply("Video downloaded! but can't send, might exceed the limit (100mbs for boosted servers, 25mb for the rest");
                 } else {
                     await interaction.editReply({
                         content: "Here is your video!",
@@ -105,15 +102,14 @@ function downloadAndSend(interaction, link) {
                 console.error("File send error:", err);
                 await interaction.editReply("Failed to send the video file.");
             } finally {
-                // Added a small delay before cleanup to ensure the upload is 100% finished
-                setTimeout(() => {
-                    if (fs.existsSync(filePath)) {
-                        fs.unlinkSync(filePath);
-                    }
-                    resolve();
-                }, 2000);
+                // Fix 5: Cleanup and always resolve to keep queue moving
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+                resolve();
             }
-        }, 5000);
+        });
+
         ytProcess.on('error', (err) => {
             console.error("Spawn error:", err);
             resolve(); // Don't let the queue hang
