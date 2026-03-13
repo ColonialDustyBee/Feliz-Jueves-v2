@@ -34,25 +34,28 @@ client.once(Events.ClientReady, readyClient => { // Allows us to confirm that th
     scheduleWeeklyJueves();
 });
 client.on(Events.InteractionCreate, async interaction => { // Reads interactions from users.
-    if (!interaction.isChatInputCommand()) return;
     const command = interaction.client.commands.get(interaction.commandName);
-    if (!command){
+    if (interaction.isCommand()){ // command
+        try {
+            await command.execute(interaction);
+        }
+        catch (error) {
+            console.error(error); // Debugging goes brr
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
+            else {
+                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
+        }
+    }
+    else if (interaction.isButton()){ // Button
+        require('./Buttons/startStopButtonHandler')(interaction);
+    }
+    else{
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
     }
-    try{
-        await command.execute(interaction);
-    }
-    catch(error){
-        console.error(error); // Debugging goes brr
-        if (interaction.replied || interaction.deferred){
-            await interaction.followUp({content: 'There was an error while executing this command!', ephemeral: true}); 
-        }
-        else{
-            await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
-        }
-    }
-    
 });
 client.on(Events.MessageCreate, async (message) => { // allows for message interaction to be possible.
     if(message.content.toLowerCase().includes("jueves")){

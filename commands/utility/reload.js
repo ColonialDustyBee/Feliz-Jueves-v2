@@ -1,6 +1,4 @@
 const {SlashCommandBuilder} = require('discord.js');
-const { execute } = require('./help');
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reload')

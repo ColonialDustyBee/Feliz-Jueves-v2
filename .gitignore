@@ -6,5 +6,8 @@ config.json
 node_modules
 # Unnecessary clutter
 .eslintrc.json
+eslint.config.mjs
 # cookies files
 *cookies.txt
+# GCP Config Instance
+config.gcp.json
