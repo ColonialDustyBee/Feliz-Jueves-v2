@@ -10,10 +10,14 @@ const GCP_CONFIG = {
 
 async function getServerStatus(){ // Should check for server
 <<<<<<< HEAD
+<<<<<<< HEAD
     const [instance] = await computeClient.get(GCP_CONFIG);
 =======
     const [instance] = await computeClient.get({GCP_CONFIG});
 >>>>>>> 7b1b06b (Added GCP VM starting capabilities for Minecraft Server)
+=======
+    const [instance] = await computeClient.get(GCP_CONFIG);
+>>>>>>> 5a2feaa (potential fix)
     return instance.status; // will return status
 }
 
