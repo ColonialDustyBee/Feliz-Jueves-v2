@@ -1,24 +1,23 @@
 const {toggleServer} = require('../gcpHandler/gcpController'); // Handles the GCP Instance spring up. 
 module.exports = async (interaction) => {
     // Acknowledge the click immediately
-    await interaction.deferUpdate();
     try{
         const status = await getServerStatus(); // Checks if GCP instance status
 
         if (interaction.customId === 'Start') {
             if (status === 'RUNNING') {
-                return await interaction.followUp("The minecraft server is already running");
+                await interaction.reply("The minecraft server is already running");
             }
             await toggleServer('START');
-            await interaction.followUp('Starting Server!');
+            await interaction.reply('Starting Server!');
         }
 
         else if (interaction.customId === 'Stop') {
             if (status === 'TERMINATED' || status === 'STOPPING') {
-                return await interaction.followUp('The minecraft server has already stopped');
+                await interaction.reply('The minecraft server has already stopped');
             }
             await toggleServer('STOP');
-            await interaction.followUp("Shutting down minecraft server");
+            await interaction.reply("Shutting down minecraft server");
         }
     }
     catch (err){
