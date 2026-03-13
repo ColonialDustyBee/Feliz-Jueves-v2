@@ -9,7 +9,7 @@ const GCP_CONFIG = {
 }
 
 async function getServerStatus(){ // Should check for server
-    const [instance] = await computeClient.get({GCP_CONFIG});
+    const [instance] = await computeClient.get(GCP_CONFIG);
     return instance.status; // will return status
 }
 
