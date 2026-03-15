@@ -11,25 +11,36 @@ module.exports = { // Start
             zone: config.zone,
             instance: config.instance
         });
-        if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
-            console.log('Minecraft server is already running');
-            await interaction.editReply({
-                content: 'Minecraft server is already running',
-                components: []
-            });
+        try{
+            if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
+                console.log('Minecraft server is already running');
+                await interaction.editReply({
+                    content: 'Minecraft server is already running',
+                    components: []
+                });
+            }
+            else {
+                console.log("Starting minecraft server");
+                await instancesClient.start({ // why would I need to check for it twice? we already do the check beforehand anyway
+                    project: config.project,
+                    zone: config.zone,
+                    instance: config.instance
+                });
+                await interaction.editReply({
+                    content: 'Minecraft server has started!',
+                    components: []
+                });
+                console.log('Minecraft Server started!');
+            }   
         }
-        else {
-            console.log("Starting minecraft server");
-            const [operation] = await instancesClient.start({
-                project: config.project,
-                zone: config.zone,
-                instance: config.instance
-            });
+        catch (error){
+            console.error("Something occurred with the server, here's the interaction dump");
+            console.error(error);
+            console.error(interaction);
             await interaction.editReply({
-                content: 'Minecraft server has started!',
+                content: 'Something occurred when attempting to start the server',
                 components: []
-            });
-            console.log('Minecraft Server started!');
-        }   
+            })
+        }
     }
 };
