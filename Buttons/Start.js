@@ -11,34 +11,26 @@ module.exports = { // Start
             zone: config.zone,
             instance: config.instance
         });
-        try{
-            if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
-                console.log('Minecraft server is already started');
-                await interaction.editReply({
-                    content: 'Minecraft server is already running',
-                    components: []
-                });
-            }
-            else{
-                console.log("Starting minecraft server");
-                const [operation] = await instancesClient.start({
-                    project: config.project,
-                    zone: config.zone,
-                    instance: config.instance
-                });
-                await interaction.editReply({
-                    content: 'Minecraft server has started!',
-                    components: []
-                });
-                console.log('Minecraft Server started!');
-                await operation.promise(); // Await the operation babey
-            }
+        if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
+            console.log('Minecraft server is already started');
+            await interaction.editReply({
+                content: 'Minecraft server is already running',
+                components: []
+            });
         }
-        catch(error){
-            await interaction.editReply("Something went wrong with starting the server");
-            console.error("Something went wrong");
-            console.error(interaction);
-        }
-        
+        else {
+            console.log("Starting minecraft server");
+            const [operation] = await instancesClient.start({
+                project: config.project,
+                zone: config.zone,
+                instance: config.instance
+            });
+            await interaction.editReply({
+                content: 'Minecraft server has started!',
+                components: []
+            });
+            console.log('Minecraft Server started!');
+            await operation.promise(); // Await the operation babey
+        }   
     }
 };
