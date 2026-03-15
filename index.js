@@ -10,6 +10,7 @@ const commandFolders = fs.readdirSync(foldersPath); // Reads commands directory
 const dotenv = require('dotenv');
 const channelID = ''; 
 const cron = require('node-cron');
+const buttonHandler = require(path.join(__dirname, 'Buttons', 'buttonHandler')); // Calls the buttonHandler
 
 dotenv.config();
 
@@ -34,8 +35,8 @@ client.once(Events.ClientReady, readyClient => { // Allows us to confirm that th
     scheduleWeeklyJueves();
 });
 client.on(Events.InteractionCreate, async interaction => { // Reads interactions from users.
-    const command = interaction.client.commands.get(interaction.commandName);
     if (interaction.isCommand()){ // command
+        const command = interaction.client.commands.get(interaction.commandName);    
         try {
             await command.execute(interaction);
         }
@@ -50,7 +51,7 @@ client.on(Events.InteractionCreate, async interaction => { // Reads interactions
         }
     }
     else if (interaction.isButton()){ // Button
-        require('./Buttons/startStopButtonHandler')(interaction);
+        await buttonHandler.handleButton(interaction); 
     }
     else{
         console.error(`No command matching ${interaction.commandName} was found.`);
