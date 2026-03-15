@@ -10,7 +10,7 @@ module.exports = { // Start
     async execute(interaction) {
         console.log("Checking if Minecraft Server can be ran")
         const instancesClient = new compute.InstancesClient();
-        const [instance] = await instancesClient.get({GCP_CONFIG});
+        const instance = await instancesClient.get(GCP_CONFIG);
         try{
             if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
                 console.log('Minecraft server is already started');
@@ -21,7 +21,7 @@ module.exports = { // Start
             }
             else{
                 console.log("Starting minecraft server");
-                const [operation] = await instancesClient.start({GCP_CONFIG});
+                const [operation] = await instancesClient.start(GCP_CONFIG);
                 await operation.promise(); // Await the operation babey
                 console.log('Minecraft Server started!');
                 await interaction.editReply({
