@@ -5,7 +5,6 @@ module.exports = { // Start
     async execute(interaction) {
         console.log("Checking if Minecraft Server can be ran")
         const instancesClient = new compute.InstancesClient();
-        const operationsClient = new compute.ZoneOperationsClient();
         console.log('Acquiring vm status');
         const [instance] = await instancesClient.get({
             project: config.project,
@@ -22,12 +21,6 @@ module.exports = { // Start
         else {
             console.log("Starting minecraft server");
             const [operation] = await instancesClient.start({
-                project: config.project,
-                zone: config.zone,
-                instance: config.instance
-            });
-            const operationName = operationResponse.name;
-            await operationsClient.wait({
                 project: config.project,
                 zone: config.zone,
                 instance: config.instance
