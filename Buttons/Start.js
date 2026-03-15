@@ -1,11 +1,6 @@
 const compute = require('@google-cloud/compute');
 const path = require('node:path');
 const config = require(path.join(__dirname, '..', 'config.gcp.json')); // The filename has to be called config.gcp.json, you could edit it to find your own name4
-const GCP_CONFIG = {
-    project: config.project,
-    zone: config.zone,
-    instance: config.instance
-}
 module.exports = { // Start
     async execute(interaction) {
         console.log("Checking if Minecraft Server can be ran")
@@ -22,7 +17,11 @@ module.exports = { // Start
             }
             else{
                 console.log("Starting minecraft server");
-                const [operation] = await instancesClient.start({GCP_CONFIG});
+                const [operation] = await instancesClient.start({
+                    project: config.project,
+                    zone: config.zone,
+                    instance: config.instance
+                });
                 await interaction.editReply({
                     content: 'Minecraft server has started!',
                     components: []
