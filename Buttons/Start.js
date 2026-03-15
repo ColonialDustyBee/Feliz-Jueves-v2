@@ -1,6 +1,6 @@
 const compute = require('@google-cloud/compute');
 const path = require('node:path');
-const config = require(path.join(__dirname, '..', 'config.gcp.json')); // The filename has to be called config.gcp.json, you could edit it to find your own name4
+const config = require(path.join(__dirname, '..', 'config.gcp.json')); // The filename has to be called config.gcp.json, you could edit it to find your own name
 module.exports = { // Start
     async execute(interaction) {
         console.log("Checking if Minecraft Server can be ran")
