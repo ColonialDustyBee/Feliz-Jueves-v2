@@ -6,7 +6,11 @@ module.exports = { // Start
         console.log("Checking if Minecraft Server can be ran")
         const instancesClient = new compute.InstancesClient();
         console.log('Acquiring vm status');
-        const [instance] = await instancesClient.get({GCP_CONFIG});
+        const [instance] = await instancesClient.get({
+            project: config.project,
+            zone: config.zone,
+            instance: config.instance
+        });
         try{
             if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
                 console.log('Minecraft server is already started');
