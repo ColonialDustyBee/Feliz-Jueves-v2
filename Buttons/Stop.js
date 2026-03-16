@@ -16,6 +16,7 @@ module.exports = { // Stop
                 console.log('Minecraft server is already turned off');
                 await interaction.editReply({
                     content: 'Minecraft server is already turned off',
+                    ephemeral: true, // Set the message as ephemeral
                     components: []
                 });
             }
@@ -28,6 +29,7 @@ module.exports = { // Stop
                 });
                 await interaction.editReply({
                     content: 'Minecraft server has stopped!',
+                    ephemeral: true, // Set the message as ephemeral
                     components: []
                 });
                 console.log('Minecraft Server stopped!');
@@ -39,6 +41,7 @@ module.exports = { // Stop
             console.error(interaction);
             await interaction.editReply({
                 content: 'Something occurred when attempting to stop the server',
+                ephemeral: true, // Set the message as ephemeral
                 components: []
             })
         }

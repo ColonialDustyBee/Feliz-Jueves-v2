@@ -16,6 +16,7 @@ module.exports = { // Start
                 console.log('Minecraft server is already running');
                 await interaction.editReply({
                     content: 'Minecraft server is already running',
+                    ephemeral: true, // Set the message as ephemeral
                     components: []
                 });
             }
@@ -28,6 +29,7 @@ module.exports = { // Start
                 });
                 await interaction.editReply({
                     content: 'Minecraft server has started!',
+                    ephemeral: true, // Set the message as ephemeral
                     components: []
                 });
                 console.log('Minecraft Server started!');
@@ -39,6 +41,7 @@ module.exports = { // Start
             console.error(interaction);
             await interaction.editReply({
                 content: 'Something occurred when attempting to start the server',
+                ephemeral: true, // Set the message as ephemeral
                 components: []
             })
         }

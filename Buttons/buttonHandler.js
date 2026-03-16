@@ -11,7 +11,7 @@ module.exports = {
            const filePath = path.join(__dirname, `./${buttonPress}.js`);
            const moduleHandler = require(filePath);
 
-           if (typeof moduleHandler.execute === 'function'){
+           if (typeof moduleHandler.execute === 'function'){ // The only catch with this approach is that it needs to have an execute function as a starting point, anything else and it would be a headache to get it to work
             await moduleHandler.execute(interaction);
            }
            else {

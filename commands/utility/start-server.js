@@ -23,6 +23,7 @@ module.exports = {
 
         await interaction.reply({
             content: "Start or Stop the minecraft server!",
+            ephemeral: true, // Set the message as ephemeral
             components: [buttonOptions]
         });
     }
