@@ -31,7 +31,8 @@ module.exports = { // Stop
                     components: []
                 });
             }
-            if (!checkPlayers) {
+            const result = await mcstatus.statusJava(externalIp, port);
+            if (result.players.online <= 0) { // Gotta check just in case for some reason it's ever -1 or some shit
                 console.log("Stopping minecraft server");
                 await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
                     project: config.project,
@@ -45,6 +46,14 @@ module.exports = { // Stop
                 });
                 console.log('Minecraft Server stopped!');
             }   
+            else{
+                console.log(`There are currently ${result.players.online} players online, Can't shut down the server`);
+                await interaction.editReply({
+                    content: `There are currently ${result.players.online} players online, Can't shut down the server`,
+                    ephemeral: true,
+                    components: []
+                })
+            }
         }
         catch (error){
             console.error("Something occurred with the server, here's the interaction dump");
