@@ -34,7 +34,21 @@ module.exports = { // Stop
             }
             const result = await mcstatus.statusJava(externalIp, minecraftPort);
             // online is undefined, makes sense if the server is offline
-            if (result.players.online <= 0 || !result.online) { // Add check to see if server is ever offline
+            if (!result.online){
+                console.log("Server is offline, shutting down VM");
+                await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
+                    project: config.project,
+                    zone: config.zone,
+                    instance: config.instance
+                });
+                await interaction.editReply({
+                    content: 'Minecraft server has stopped!',
+                    ephemeral: true,
+                    components: []
+                });
+                console.log('Minecraft Server stopped!');
+            }
+            if (result.players.online <= 0) { 
                 console.log("Stopping minecraft server");
                 await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
                     project: config.project,
