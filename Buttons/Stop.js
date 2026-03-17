@@ -33,7 +33,8 @@ module.exports = { // Stop
                 });
             }
             const result = await mcstatus.statusJava(externalIp, minecraftPort);
-            if (result.players.online <= 0) { // Gotta check just in case for some reason it's ever -1 or some shit
+            // online is undefined, makes sense if the server is offline
+            if (result.players.online <= 0 || !result.online) { // Add check to see if server is ever offline
                 console.log("Stopping minecraft server");
                 await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
                     project: config.project,
