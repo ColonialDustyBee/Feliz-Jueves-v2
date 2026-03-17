@@ -12,7 +12,7 @@ module.exports = { // Start
             instance: config.instance
         });
         try{
-            if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'RUNNING') { // Checks if the vm is already turned on
+            if (instance.status === 'RUNNING' || instance.status === 'STAGING' || instance.status === 'PROVISIONING') { // Checks if the vm is already turned on
                 console.log('Minecraft server is already running');
                 await interaction.editReply({
                     content: 'Minecraft server is already running',
@@ -20,7 +20,15 @@ module.exports = { // Start
                     components: []
                 });
             }
-            else {
+            else if(instance.status === 'STOPPING' || instance.status === 'PENDING_STOP'){ // Check if the server is in the process of stopping. Needs to be done to ensure Jueves can turn on the vm
+                console.log("Minecraft server is in the process of stopping");
+                await interaction.editReply({
+                    content: 'Minecraft server is in the process of stopping, wait a bit before trying to start it again.',
+                    ephemeral: true,
+                    components: []
+                });
+            } 
+            else { // It HAS to be terminated
                 console.log("Starting minecraft server");
                 await instancesClient.start({ // why would I need to check for it twice? we already do the check beforehand anyway
                     project: config.project,
