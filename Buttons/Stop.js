@@ -31,7 +31,6 @@ module.exports = { // Stop
                     components: []
                 });
             }
-            const checkPlayers = checkingIfPlayersOnline(externalIp);
             if (!checkPlayers) {
                 console.log("Stopping minecraft server");
                 await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
