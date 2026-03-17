@@ -15,7 +15,7 @@ module.exports = { // Stop
         });
         const externalIp = instance.networkInterfaces[0].accessConfigs[0].natIP; // Grabs the external IP of the GCP instance
         console.log(`Minecraft Server IP: ${externalIp}`);
-        try{
+        
             if (instance.status === 'PENDING_STOP' || instance.status === 'STOPPING' || instance.status === 'TERMINATED') { // Checks if the vm is already turned off
                 console.log('Minecraft server is already turned off');
                 await interaction.editReply({
@@ -34,7 +34,31 @@ module.exports = { // Stop
             }
             const result = await mcstatus.statusJava(externalIp, minecraftPort);
             // online is undefined, makes sense if the server is offline
-            if (!result.online){
+            try{
+                if (result.players.online <= 0) { // Should trigger the catch block if it's offline, any other case it will work fine
+                    console.log("Stopping minecraft server");
+                    await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
+                        project: config.project,
+                        zone: config.zone,
+                        instance: config.instance
+                    });
+                    await interaction.editReply({
+                        content: 'Minecraft server has stopped!',
+                        ephemeral: true,
+                        components: []
+                    });
+                    console.log('Minecraft Server stopped!');
+                }
+                else {
+                    console.log(`There are currently ${result.players.online} players online, Can't shut down the server`);
+                    await interaction.editReply({
+                        content: `There are currently ${result.players.online} players online, Can't shut down the server`,
+                        ephemeral: true,
+                        components: []
+                    })
+                }
+            }
+            catch (error){ // Will only occur if server is offline
                 console.log("Server is offline, shutting down VM");
                 await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
                     project: config.project,
@@ -48,38 +72,5 @@ module.exports = { // Stop
                 });
                 console.log('Minecraft Server stopped!');
             }
-            if (result.players.online <= 0) { 
-                console.log("Stopping minecraft server");
-                await instancesClient.stop({ // The code is the exact same as the start command, you just stop this time.
-                    project: config.project,
-                    zone: config.zone,
-                    instance: config.instance
-                });
-                await interaction.editReply({
-                    content: 'Minecraft server has stopped!',
-                    ephemeral: true,
-                    components: []
-                });
-                console.log('Minecraft Server stopped!');
-            }   
-            else{
-                console.log(`There are currently ${result.players.online} players online, Can't shut down the server`);
-                await interaction.editReply({
-                    content: `There are currently ${result.players.online} players online, Can't shut down the server`,
-                    ephemeral: true,
-                    components: []
-                })
-            }
-        }
-        catch (error){
-            console.error("Something occurred with the server, here's the interaction dump");
-            console.error(error);
-            console.error(interaction);
-            await interaction.editReply({
-                content: 'Something occurred when attempting to stop the server',
-                ephemeral: true,
-                components: []
-            })
         }
     }
-};
